@@ -1,4 +1,5 @@
 from colorama import Fore, Back, Style
+import random
 """
 Knihovny: unittest, coloroma
 
@@ -21,26 +22,39 @@ def create_character():
 
 def get_character_name():
     character_name = input("Zadej jméno: ")
+    
+    if len(character_name) == 0:
+        print(Fore.RED + "Chyba: Název charakteru nesmí být prázdný")
+        character_name = 'Hrdina'
+
     print(f"Ahoj, {character_name}, tvé dobrodružství začíná...")
     return character_name
 
 def get_player_choice():
-    return input("Co chceš dělat? (např. 'prozkoumat', 'mluvit', 'bojovat', 'quit'): ")
+    return input("Co chceš dělat? (např. 'prozkoumat', 'mluvit', 'bojovat', 'obchodovat', 'quit'): ")
 
-def process_action(action):
+def process_action(action, character):
     if action == 'prozkoumat':
-        explore()
+        explore(character)
     elif action == 'obchodovat':
-        trade()
+        trade(character)
     elif action == 'mluvit':
-        talk()
+        talk(character)
     elif action == 'bojovat':
-        fight()
+        fight(character)
     else:
         print("Neznámá akce.")
 
-def explore():
-    print("Prozkoumáváš oblast.")
+def explore(character):
+    discoveries = ["starý meč", "zlatá mince", "magický amulet", "nic"]
+
+    found_item = random.choice(discoveries)
+    
+    if found_item != "nic":
+        character['inventory'].append(found_item)
+        print(f"Našel jsi {found_item}!")
+    else:
+        print("Prozkoumal jsi oblast, ale nenašel jsi nic zajímavého.")
 
 def trade(character):
     """
@@ -49,52 +63,41 @@ def trade(character):
     Parameters:
     character (dict): Slovník obsahující informace o postavě, včetně mincí a inventáře.
     """
-    items_for_sale = {
-        1: {'name': '+1 Život', 'price': 50},
-        2: {'name': '+1 Síla', 'price': 75},
-        3: {'name': 'Kouzelný lektvar', 'price': 100}
-    }
+    items_for_sale = [
+        {'name': 'Život', 'price': 50},
+        {'name': 'Síla', 'price': 75},
+        {'name': 'Kouzelný lektvar', 'price': 100}
+    ]
     
-    # Zobrazí dostupné předměty a jejich ceny
+    # Zobrazení dostupných předmětů a jejich cen
     print("Dostupné předměty k nákupu:")
-    for key, item in items_for_sale.items():
-        print(f"({key}) {item['name']} - Cena: {item['price']} mincí")
+    for index, item in enumerate(items_for_sale):
+        print(f"({index + 1}) {item['name']} - Cena: {item['price']} mincí")
     
-    # Získá uživatelský vstup
-    try:
-        product_number = int(input("Co chceš nakoupit? (Vyber číslo): "))
-        product = items_for_sale.get(product_number)
-        if product is None:
-            print("Neplatný výběr.")
-            return
+    # Získání uživatelského vstupu
+    product_index = int(input("Co chceš nakoupit? (Vyber číslo): ")) - 1
+    if product_index < 0 or product_index >= len(items_for_sale):
+        print("Neplatný výběr.")
+        return
 
-        # Kontrola, zda má hráč dost mincí
-        if character['coins'] < product['price']:
-            print("Nemáš dost mincí na koupi tohoto předmětu.")
-            # Vrátí se zpět do hlavní smyčky
-            return
+    product = items_for_sale[product_index]
 
-        # Odečtení peněz charaktera
-        character['coins'] -= product['price']
-        # Přidání itemu do inventáře
-        character['inventory'].append(product['name'])
+    # Kontrola, zda má hráč dost mincí
+    if character['coins'] < product['price']:
+        print("Nemáš dost mincí na koupi tohoto předmětu.")
+        return
 
-        print(f"Zakoupil jsi {product['name']}. Zbývající mince: {character['coins']}.")
+    # Provedení nákupu
+    character['coins'] -= product['price']
+    character['inventory'].append(product['name'])
+    print(f"Zakoupil jsi {product['name']}. Zbývající mince: {character['coins']}.")
 
-    except ValueError:
-        print("Prosím zadej platné číslo.")
 
-    pass
-
-def talk():
+def talk(character):
     print("Mluvíš s postavou.")
 
-def fight():
-    print("Bojuješ s nepřítelem.")
-
-def outro():
-    print("Konec hry. Díky za hraní!")
-
+def fight(character):
+    print("Bojuješ.")
 
 def game_loop():
     print("Vítejte ve hře! Jak se jmenuješ?")
@@ -109,4 +112,4 @@ def game_loop():
         action = get_player_choice()
         if action.lower() == 'quit':
             break
-        process_action(action)
+        process_action(action, character)
