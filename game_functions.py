@@ -48,8 +48,8 @@ def get_player_choice(character) -> str:
     """
 
     print("-----------------------------------------------------------------------")
-    print(Fore.RED + f"Životy: {character["health"]}" )
-    print(Fore.BLUE + f"Peníze: {character["coins"]}" )
+    print(Fore.RED + f"Životy: {character['health']}" )
+    print(Fore.BLUE + f"Peníze: {character['coins']}" )
     print("-----------------------------------------------------------------------")
 
     return input("Co chceš dělat? (např. 'prozkoumat', 'mluvit', 'bojovat', 'obchodovat', 'quit'): ")
@@ -169,7 +169,7 @@ def fight(character):
 
 def check_player_dead(character):
     print("Byl jsi zabit!")
-    print(Fore.BLUE + f"Počet peněz: {character["coins"]}")
+    print(Fore.BLUE + f"Počet peněz: {character['coins']}")
     raise PlayerDiedException("Hráč umřel, hra končí.")
 
 def game_loop():
@@ -178,7 +178,7 @@ def game_loop():
     character = create_character()
 
     # Vypíšeme informace o charakteru:
-    print(Fore.BLUE + f"Jméno: {character["name"]}, Životů: {character["health"]}, Peněz: {character["coins"]}, Počet itemů v inventáři: {len(character["inventory"])}")
+    print(Fore.BLUE + f"Jméno: {character['name']}, Životů: {character['health']}, Peněz: {character['coins']}, Počet itemů v inventáři: {len(character['inventory'])}")
 
     try:
         while True:
