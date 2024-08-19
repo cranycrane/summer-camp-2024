@@ -142,7 +142,7 @@ def fight(character):
     fight_number = random.randrange(0,100)
 
     enemy_number = random.randrange(0,100)
-    player_number = int(input("Hádej číslo v rozsahu 0 až 100. Pokud se trefíš blíž než nepřítel, vyhraješ!"))
+    player_number = int(input("Hádej číslo v rozsahu 0 až 100. Pokud se trefíš blíž než nepřítel, vyhraješ!\n"))
 
     if player_number <= 0 or player_number >= 100:
         print(Fore.RED + "Zadáno neplatné číslo, vrácíme se zpět!")
@@ -170,7 +170,7 @@ def fight(character):
 def check_player_dead(character):
     print("Byl jsi zabit!")
     print(Fore.BLUE + f"Počet peněz: {character["coins"]}")
-    sys.exit(0)
+    raise PlayerDiedException("Hráč umřel, hra končí.")
 
 def game_loop():
     print("Vítejte ve hře! Jak se jmenuješ?")
@@ -180,8 +180,15 @@ def game_loop():
     # Vypíšeme informace o charakteru:
     print(Fore.BLUE + f"Jméno: {character["name"]}, Životů: {character["health"]}, Peněz: {character["coins"]}, Počet itemů v inventáři: {len(character["inventory"])}")
 
-    while True:
-        action = get_player_choice(character)
-        if action.lower() == 'quit':
-            break
-        process_action(action, character)
+    try:
+        while True:
+            action = get_player_choice(character)
+            if action.lower() == 'quit':
+                break
+            process_action(action, character)
+    except PlayerDiedException:
+        return
+
+class PlayerDiedException(Exception):
+    """Výjimka pro situaci, kdy hráč umře ve hře."""
+    pass

@@ -74,7 +74,10 @@ class TestCharacterCreation(unittest.TestCase):
     @patch('builtins.input', return_value='30')
     @patch('time.sleep', return_value=None)
     def test_player_loses(self, mock_input, mock_randrange, _):
-        fight(self.character)
+        try:
+            fight(self.character)
+        except PlayerDiedException as e:
+            self.assertIn("Hráč umřel", str(e))
         self.assertEqual(self.character['coins'], 150)
         self.assertEqual(self.character['health'], 70)
 
@@ -95,4 +98,8 @@ class TestCharacterCreation(unittest.TestCase):
 
 if __name__ == '__main__':
     init(autoreset=True)
-    unittest.main()
+    result = unittest.main(exit=False)
+    if result.result.wasSuccessful():
+        print(Fore.GREEN + "Všechny úkoly splněny! Skvělá práce!")
+    else:
+        print(Fore.RED + f"Některé úkoly nejsou splněné. Zbývá splnit {len(result.result.failures)} úkolů.")
