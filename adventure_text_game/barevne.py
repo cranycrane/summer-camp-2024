@@ -1,7 +1,7 @@
 from colorama import Fore, Back, Style, init
 
 
-def process_color(color):
+def menic_barev(color):
     if color == 'red-fg':
         print(Fore.RED + 'Toto je červený text')
     elif color == 'red-bg':
@@ -30,7 +30,7 @@ def main():
         color = get_player_color()
         if color.lower() == 'quit':
             break
-        process_color(color)
+        menic_barev(color)
 
 if __name__ == "__main__":
     main()

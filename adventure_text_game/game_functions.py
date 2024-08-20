@@ -2,6 +2,7 @@ from colorama import Fore, Back, Style
 import random
 import sys
 import time
+import pygame
 """
 Knihovny: unittest, coloroma
 """
@@ -86,6 +87,7 @@ def explore(character):
     if found_item != "nic":
         character['inventory'].append(found_item)
         print(Fore.GREEN + f"Našel jsi {found_item}!")
+        play_sound("zvuky/coin.mp3")
     else:
         print(Fore.LIGHTBLACK_EX + "Prozkoumal jsi oblast, ale nenašel jsi nic zajímavého.")
 
@@ -144,7 +146,7 @@ def fight(character):
     enemy_number = random.randrange(0,100)
     player_number = int(input("Hádej číslo v rozsahu 0 až 100. Pokud se trefíš blíž než nepřítel, vyhraješ!\n"))
 
-    if player_number <= 0 or player_number >= 100:
+    if player_number < 0 or player_number > 100:
         print(Fore.RED + "Zadáno neplatné číslo, vrácíme se zpět!")
         return
 
@@ -153,6 +155,7 @@ def fight(character):
 
     print(f"Bojuješ s nepřítelem! Hádané číslo: {fight_number}")
 
+    play_sound("zvuky/fight.mp3")
     time.sleep(2)
 
     if player_difference < enemy_difference:
@@ -163,14 +166,16 @@ def fight(character):
         print(Fore.LIGHTBLACK_EX + "Boj byl nerozhodný, oba ustupujete.")
     else:
         print(Fore.RED + "Nepřítel byl příliš silný. Utrpěl jsi zranění.")
+        play_sound("zvuky/dead.mp3")
         character['health'] -= 30
 
         check_player_dead(character)
 
 def check_player_dead(character):
-    print("Byl jsi zabit!")
-    print(Fore.BLUE + f"Počet peněz: {character['coins']}")
-    raise PlayerDiedException("Hráč umřel, hra končí.")
+    if character["health"] <= 0:
+        print("Byl jsi zabit!")
+        print(Fore.BLUE + f"Počet peněz: {character['coins']}")
+        raise PlayerDiedException("Hráč umřel, hra končí.")
 
 def game_loop():
     print("Vítejte ve hře! Jak se jmenuješ?")
@@ -188,6 +193,16 @@ def game_loop():
             process_action(action, character)
     except PlayerDiedException:
         return
+    
+def play_sound(file_path):
+    pygame.init()
+    pygame.mixer.init()
+    sound = pygame.mixer.Sound(file_path)
+
+    sound.play()
+
+    while pygame.mixer.get_busy():
+        pygame.time.Clock().tick(10)
 
 class PlayerDiedException(Exception):
     """Výjimka pro situaci, kdy hráč umře ve hře."""
