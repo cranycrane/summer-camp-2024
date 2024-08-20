@@ -3,7 +3,7 @@ from colorama import Fore, Back, Style, init
 
 import unittest
 from unittest.mock import patch
-from game_functions import *
+from adventure_text_game.adventure import *
 
 
 class TestCharacterCreation(unittest.TestCase):

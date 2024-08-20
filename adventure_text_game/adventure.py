@@ -1,4 +1,4 @@
-from colorama import Fore, Back, Style
+from colorama import Fore, Back, Style, init
 import random
 import sys
 import time
@@ -87,7 +87,7 @@ def explore(character):
     if found_item != "nic":
         character['inventory'].append(found_item)
         print(Fore.GREEN + f"Našel jsi {found_item}!")
-        play_sound("zvuky/coin.mp3")
+        hrej_zvuk("zvuky/coin.mp3")
     else:
         print(Fore.LIGHTBLACK_EX + "Prozkoumal jsi oblast, ale nenašel jsi nic zajímavého.")
 
@@ -155,18 +155,19 @@ def fight(character):
 
     print(f"Bojuješ s nepřítelem! Hádané číslo: {fight_number}")
 
-    play_sound("zvuky/fight.mp3")
+    hrej_zvuk("zvuky/fight.mp3")
     time.sleep(2)
 
     if player_difference < enemy_difference:
         print(Fore.GREEN + "Zvítězil jsi nad nepřítelem a získal jsi 100 peněz!")
         character['inventory'].append('poklad')
+        hrej_zvuk("zvuky/coin.mp3")
         character['coins'] += 100
     elif player_difference == enemy_difference:
         print(Fore.LIGHTBLACK_EX + "Boj byl nerozhodný, oba ustupujete.")
     else:
         print(Fore.RED + "Nepřítel byl příliš silný. Utrpěl jsi zranění.")
-        play_sound("zvuky/dead.mp3")
+        hrej_zvuk("zvuky/dead.mp3")
         character['health'] -= 30
 
         check_player_dead(character)
@@ -194,15 +195,20 @@ def game_loop():
     except PlayerDiedException:
         return
     
-def play_sound(file_path):
+def hrej_zvuk(file_path, hlasitost=1.0):
     pygame.init()
     pygame.mixer.init()
-    sound = pygame.mixer.Sound(file_path)
+    zvuk = pygame.mixer.Sound(file_path)
+    zvuk.set_volume(hlasitost)
+    zvuk.play()
 
-    sound.play()
+def main():
+    hrej_zvuk("./zvuky/hudba.mp3", 0.4)
+    init(autoreset=True)
+    game_loop()
 
-    while pygame.mixer.get_busy():
-        pygame.time.Clock().tick(10)
+if __name__ == "__main__":
+    main()        
 
 class PlayerDiedException(Exception):
     """Výjimka pro situaci, kdy hráč umře ve hře."""
