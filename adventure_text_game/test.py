@@ -5,7 +5,7 @@ import unittest
 import io
 import sys
 from unittest.mock import patch
-from adventure_orig import *
+from adventure_student import *
 
 
 class TestcharakterCreation(unittest.TestCase):
