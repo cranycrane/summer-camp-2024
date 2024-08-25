@@ -72,15 +72,15 @@ srdce_obrázek = pygame.transform.scale(srdce_obrázek, (32, 32))
 """
     Úkol 1 - Výpis skóre:
     Zadání:
-    1. Implementujte změnu barvy textu skóre na základě výše skóre.
+    1. Naprogramujte změnu barvy textu skóre na základě výše skóre.
     2. Barva se mění na zelenou, pokud je skóre vyšší než 5, jinak na bílou.
 """
 
 def zobraz_score(x, y):
-    if score >= 15:
-        skóre = font.render("Skóre : " + str(score), True, (0, 255, 0))  # Zelená
-    else:
-        skóre = font.render("Skóre : " + str(score), True, (255, 255, 255))  # Bílá
+
+    ###### ZDE UDĚLEJ ÚKOL 1 ####### 
+
+    skóre = font.render("Skóre : " + str(score), True, (255, 255, 255))
     okno.blit(skóre, (x, y))
 
 
@@ -88,30 +88,29 @@ def zobraz_score(x, y):
     Úkol 2 - Dynamická změna barvy pozadí životů:
     Zadání:
     1. Napište smyčku, která bude v herní funkci 'zobraz_životy' zobrazovat životy hráče.
-    2. Každé srdce reprezentuje jeden život a je vykresleno vedle sebe s daným rozestupem.
+    2. Každé srdce reprezentuje jeden život a je vykresleno vedle sebe s pevným rozestupem.
     3. Upravte barvu pozadí za srdci:
        - Pokud zbývá jeden život, nastavte pozadí na červenou.
        - Pokud zbývají dva životy, nastavte pozadí na oranžovou.
-       - Pro více než dva životy použijte standardní barvu.
-    4. Implementaci proveďte tak, aby se pozadí měnilo před vykreslením srdcí.
+       - Pro více než dva životy použijte bílou barvu.
+
+    tip: proměnnou na pozadí pojmenuj pozadí_barva
 """
 
 def zobraz_životy(x, y):
-    # Nastavení barvy pozadí podle počtu životů
-    if životy == 1:
-        pozadí_barva = (255, 0, 0)  # Červená barva pro 1 život
-    elif životy == 2:
-        pozadí_barva = (255, 165, 0)  # Oranžová barva pro 2 životy
-    else:
-        pozadí_barva = (255, 255, 255)  # Standardní bílá barva pro 3 a více životů
+    
+
+    ##### ZDE NAPIŠTE KÓD PRO ZMĚNU BARVY #####
 
     # Vykreslení pozadí za srdci
     pozadí_rect = pygame.Rect(x, y, životy * 40, 32)
     okno.fill(pozadí_barva, pozadí_rect)
 
+    ##### ZDE NAPIŠTE KÓD PRO VYKRESLENÍ SRDCÍ ######
+
     # Vykreslení srdcí
-    for i in range(životy):
-        okno.blit(srdce_obrázek, (x + i * 40, y))
+    for """doplň""" in """doplň""":
+        okno.blit(srdce_obrázek, ("""doplň""", """doplň"""))
 
 def uber_život():
     global životy
@@ -145,7 +144,7 @@ def vykresli_nepřítele(x, y, i):
 """
     Úkol 3 - Pohyb projektilu:
     Zadání:
-    1. Upravte směr a rychlost projektilů hráče na základě aktuální pozice hráče.
+    1. Upravte směr a rychlost projektilů hráče.
     2. Projektil by měl směřovat nahoru.
 
     Rada:
@@ -155,10 +154,9 @@ def vykresli_nepřítele(x, y, i):
 def vystřel_projektil(x, y):
     global projektil_střelba
     projektil_střelba = True
-    projektil_x = x + 16    
-    projektil_y = y+10
+    projektil_x = """doplň""" 
+    projektil_y = """doplň"""
     okno.blit(projektil, (projektil_x, projektil_y))
-
 
 """
     Úkol 4 - Detekce kolize pomocí matematického vzorce:
@@ -167,13 +165,14 @@ def vystřel_projektil(x, y):
     2. Použijte k tomu matematický vzorec pro výpočet vzdálenosti mezi dvěma body na obrazovce:
        √((x2 - x1)^2 + (y2 - y1)^2)
 
+
     Rada:
     - Použijte funkci 'math.sqrt' pro výpočet druhé odmocniny a 'math.pow' pro umocnění na druhou.
     - Vzorec můžete zapsat přímo do proměnné 'vzdálenost'.
-"""   
+"""
 
 def je_kolize(nepřítel_x, nepřítel_y, projektil_x, projektil_y):
-    vzdálenost = math.sqrt(math.pow(nepřítel_x - projektil_x, 2) + math.pow(nepřítel_y - projektil_y, 2))
+    vzdálenost = """Zde napiš vzorec"""
     return vzdálenost < 27
 
 def zobraz_výbuch(x, y):
@@ -208,6 +207,9 @@ last_enemy_add_score = 0
     1. Implementujte funkci pauzy, která se aktivuje a deaktivuje stiskem klávesy 'P'.
     2. Během pauzy se veškerý pohyb a akce nepřátel zastaví.
     3. Na obrazovce se objeví text "Pauza - stiskněte 'P' pro pokračování".
+
+    Rada: pygame.KEYDOWN značí, že byla stisknuta klávesa a pygame.K_p značí, že konkrétně klávesa P byla sisknuta.
+    Použij tyhle funkce na podmínku.
 """
 
 
@@ -229,22 +231,16 @@ last_enemy_add_score = 0
     4. Implementaci proveďte uvnitř hlavní herní smyčky.
 """
 while běží_hra:
-    if score >= 10:
-        okno.fill((128, 128, 128))  # Šedá barva
-    else:
-        okno.fill((0, 0, 0))  # Standardní černá barva
+    
+
+    ##### ZDE NAPIŠ KÓD PRO ÚKOL 5 #####
 
     for událost in pygame.event.get():
         if událost.type == pygame.QUIT:
             běží_hra = False
-        elif událost.type == pygame.KEYDOWN:
-            if událost.key == pygame.K_p:
-                pauza = not pauza
+        #### ZDE PŘIDEJ PODMÍNKU PRO PAUZU (ÚKOL 4) ####
 
-    if score >= 5:
-        hráč_rychlost = 10  # Zvýšení rychlosti hráče na dvojnásobek
-    else:
-        hráč_rychlost = 5  # Standardní rychlost hráče
+    ##### ZDE NAPIŠ KÓD PRO ÚKOL 6 #####
     
     klávesy = pygame.key.get_pressed()
     if klávesy[pygame.K_LEFT] and hráč_x > 0:
