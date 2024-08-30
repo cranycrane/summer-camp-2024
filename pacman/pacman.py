@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # Inicializace Pygame
 pygame.init()
@@ -8,7 +9,7 @@ pygame.init()
 černá = (0, 0, 0)
 modrá = (0, 0, 255)
 žlutá = (255, 255, 0)
-bílá = (255, 255, 255)
+bílá = (255, 255, 0)
 
 # Nastavení velikosti okna
 velikost_bloku = 30
@@ -71,10 +72,9 @@ class PacMan:
         self.směr_y = 0
         self.score = 0
         self.tolerance_kolize = 2
-        # Načtení obrázku Pac-Mana
+        self.životy = 3  # Počet životů
         obrázek_pacman = pygame.image.load('obrazky/1.png')
         self.obrázek_pacman = pygame.transform.scale(obrázek_pacman, (velikost_bloku, velikost_bloku))
-
 
     def pohyb(self):
         next_x = self.x + self.směr_x
@@ -87,7 +87,6 @@ class PacMan:
             bludiště[(next_y + velikost_bloku - 1 - self.tolerance_kolize) // velikost_bloku][(next_x + velikost_bloku - 1 - self.tolerance_kolize) // velikost_bloku] != "#"):
             self.x = next_x
             self.y = next_y
-
 
     def vykresli(self):
         okno.blit(self.obrázek_pacman, (self.x, self.y))
@@ -102,8 +101,64 @@ class PacMan:
             bludiště[řádek] = bludiště[řádek][:sloupec] + " " + bludiště[řádek][sloupec + 1:]
             self.score += 50
 
+    def detekuj_kolizi_s_duchem(self, duchové):
+        for duch in duchové:
+            # Kontrola kolize
+            if abs(self.x - duch.x) < velikost_bloku // 2 and abs(self.y - duch.y) < velikost_bloku // 2:
+                self.životy -= 1  # Ztráta života
+                if self.životy <= 0:
+                    return False  # Hra končí, pokud Pac-Man nemá žádné životy
+                else:
+                    # Restart pozice Pac-Mana
+                    self.x = 1 * velikost_bloku
+                    self.y = 1 * velikost_bloku
+                    self.směr_x = 0
+                    self.směr_y = 0
+                    return True  # Pokračování hry
+        return True  # Pokračování hry
+
+class Duch:
+    def __init__(self, x, y, obrazek_path):
+        self.x = x * velikost_bloku
+        self.y = y * velikost_bloku
+        self.rychlost = velikost_bloku // 8
+        self.směr_x = 0
+        self.směr_y = 0
+        obrázek_duch = pygame.image.load(obrazek_path)
+        self.obrázek_duch = pygame.transform.scale(obrázek_duch, (velikost_bloku, velikost_bloku))
+
+    def pohyb(self):
+        # Náhodná změna směru
+        if random.randint(0, 20) == 0:
+            self.změň_směr()
+
+        next_x = self.x + self.směr_x
+        next_y = self.y + self.směr_y
+
+        # Ověření, zda duch nenarazí do zdi
+        if (bludiště[(next_y) // velikost_bloku][(next_x) // velikost_bloku] != "#" and
+            bludiště[(next_y + velikost_bloku - 1) // velikost_bloku][(next_x) // velikost_bloku] != "#" and
+            bludiště[(next_y) // velikost_bloku][(next_x + velikost_bloku - 1) // velikost_bloku] != "#" and
+            bludiště[(next_y + velikost_bloku - 1) // velikost_bloku][(next_x + velikost_bloku - 1) // velikost_bloku] != "#"):
+            self.x = next_x
+            self.y = next_y
+        else:
+            self.změň_směr()
+
+    def změň_směr(self):
+        směry = [(0, -self.rychlost), (0, self.rychlost), (-self.rychlost, 0), (self.rychlost, 0)]
+        self.směr_x, self.směr_y = random.choice(směry)
+
+    def vykresli(self):
+        okno.blit(self.obrázek_duch, (self.x, self.y))
+
+
 def hra():
     pacman = PacMan()
+    duchové = [
+        Duch(10, 14, 'obrazky/ghost.png'),  # Umístění prvního ducha
+        Duch(16, 14, 'obrazky/ghost2.png')   # Umístění druhého ducha
+    ]
     běží_hra = True
     hodiny = pygame.time.Clock()
 
@@ -132,26 +187,40 @@ def hra():
         pacman.pohyb()
         pacman.sbírej_bod()
 
+        # Pohyb duchů
+        for duch in duchové:
+            duch.pohyb()
+
+        # Kontrola kolize
+        if not pacman.detekuj_kolizi_s_duchem(duchové):
+            běží_hra = False
+
         okno.fill(černá)
         vykresli_bludiště(okno, bludiště)
         pacman.vykresli()
 
-        # Zobrazení skóre
+        # Vykreslení duchů
+        for duch in duchové:
+            duch.vykresli()
+
+        # Zobrazení skóre a životů
         font = pygame.font.SysFont(None, 35)
         score_text = font.render("Skóre: " + str(pacman.score), True, bílá)
+        životy_text = font.render("Životy: " + str(pacman.životy), True, bílá)
         okno.blit(score_text, (10, 10))
+        okno.blit(životy_text, (10, 50))
 
         pygame.display.update()
         hodiny.tick(30)
 
-    # Nabídka restartu nebo ukončení
+    # Konec hry - nabídka restartu nebo ukončení
     okno.fill(černá)
     font = pygame.font.SysFont(None, 55)
-    text = font.render("Konec hry! Stiskni R pro restart nebo Q pro konec.", True, bílá)
+    text = font.render("Konec hry! Stiskni R pro restart nebo Q pro konec.", True, žlutá)
     okno.blit(text, (50, výška_okna // 2))
     pygame.display.update()
 
-    # Čeká na uživatelský vstup
+    # Čekání na uživatelský vstup
     while True:
         for událost in pygame.event.get():
             if událost.type == pygame.QUIT:
@@ -163,5 +232,13 @@ def hra():
                 elif událost.key == pygame.K_q:
                     pygame.quit()
                     sys.exit()
-
+def hrej_zvuk(file_path, hlasitost=1.0):
+    pygame.init()
+    pygame.mixer.init()
+    zvuk = pygame.mixer.Sound(file_path)
+    zvuk.set_volume(hlasitost)
+    zvuk.play()
+# Spuštění hry
 hra()
+pygame.quit()
+

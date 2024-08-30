@@ -21,7 +21,7 @@ def získej_jméno_charaktera() -> str:
     """
 
     ########### Oprav tento kód ############
-    = input("Zadej jméno: ")
+    jméno_charaktera = input("Zadej jméno: ")
     ########################################
 
 
@@ -31,7 +31,7 @@ def získej_jméno_charaktera() -> str:
 
     ############## Doplň kód ###############
 
-
+    return jméno_charaktera
 
     ########################################
 
@@ -136,12 +136,12 @@ def prozkoumat(charakter):
 
     time.sleep(2)
 
-    objevy = ["nic"]
+    objevy = ["nic", "meč", "brnění"]
 
     nalezený_item = random.choice(objevy)
     
     ############## Doplň kód do podmínky ###############
-    if 
+    if "nic" == nalezený_item:
         charakter['inventář'].append(nalezený_item)
         print(Fore.GREEN + f"Našel jsi {nalezený_item}!")
         hrej_zvuk("zvuky/coin.mp3")
