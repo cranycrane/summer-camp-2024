@@ -14,7 +14,6 @@ posun = 3
 zasifrovany = caesar_sifra(text, posun)
 print(f"Zasifrovany text: {zasifrovany}")
 
-
 def caesar_desifruj(text, posun):
     desifrovany_text = ""
     for znak in text:

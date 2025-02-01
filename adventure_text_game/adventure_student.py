@@ -56,10 +56,10 @@ def vytvoř_charakter():
 
     # Vrátíme informace o charakteru
     return {
-        "jméno": ,
-        "životy": ,
-        "peníze": ,
-        "inventář": 
+        "jméno": """DOPLNIT""",
+        "životy": """DOPLNIT""",
+        "peníze": """DOPLNIT""",
+        "inventář": """DOPLNIT""" 
     }
     ########################################
 
@@ -70,7 +70,7 @@ def vytvoř_charakter():
     1. Doplň funkci tak, aby pomocí funkce 'print' vypsala informace o charakteru v tomto formátu:¨
         Životy: počet_životů
         Peníze: počet_peněz
-        Inventář: 'jednotlivé předměty z inventáře'¨
+        Inventář (tohle už je implementováno níže, podívej se jak se přistupuje k proměnným charakteru): 'jednotlivé předměty z inventáře'¨
     Můžeš si hrát i s barvičkami v textu, tak jak v 'barevne.py'
 """
 def zobraz_informace_charakteru(charakter):
@@ -141,7 +141,7 @@ def prozkoumat(charakter):
     nalezený_item = random.choice(objevy)
     
     ############## Doplň kód do podmínky ###############
-    if "nic" == nalezený_item:
+    if """DOPLNIT""":
         charakter['inventář'].append(nalezený_item)
         print(Fore.GREEN + f"Našel jsi {nalezený_item}!")
         hrej_zvuk("zvuky/coin.mp3")
@@ -252,9 +252,9 @@ def bojovat(charakter):
     číslo_nepřítel = random.randrange(0,100)
     číslo_hráč = int(input("Hádej číslo v rozsahu 0 až 100. Pokud se trefíš blíž než nepřítel, vyhraješ!\n"))
 
-    if číslo_hráč < 0 or číslo_hráč > 100:
-        print(Fore.RED + "Zadáno neplatné číslo, vrácíme se zpět!")
-        return
+    ###################################################
+    """DOPLNIT PODMÍNKU POKUD UŽIVATEL ZADAL NESPRÁVNOU HODNOTU"""
+    ###################################################
 
     rozdíl_nepřítele = abs(bojovací_číslo - číslo_nepřítel)
     rozdíl_hráče = abs(bojovací_číslo - číslo_hráč)
