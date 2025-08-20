@@ -1,24 +1,195 @@
 {
-  "title": "Ukázkový kvíz",
-  "description": "První testík",
+  "title": "Python základy – proměnné, podmínky, print, input",
+  "description": "20 otázek pro začátečníky: vědomosti, doplňování kódu, opravy a „co kód vypíše“.",
   "questions": [
     {
-      "q": "Který z těchto datových typů je v Pythonu?",
+      "q": "Který z těchto datových typů je v Pythonu vestavěný číselný typ?",
       "a": "car",
       "b": "document",
-      "c": "integer",
+      "c": "integer (int)",
       "d": "house",
       "correct": "c",
-      "explain": "V Pythonu je základní číselný typ 'int' (integer)."
+      "explain": "V Pythonu existuje vestavěný číselný typ int (integer)."
     },
     {
-      "q": "Jak se zapisuje komentář v Pythonu?",
-      "a": "//",
-      "b": "#",
-      "c": "/* */",
-      "d": "--",
+      "q": "Jak se zapisuje jednořádkový komentář v Pythonu?",
+      "a": "// komentář",
+      "b": "# komentář",
+      "c": "/* komentář */",
+      "d": "-- komentář",
       "correct": "b",
-      "explain": "Jednořádkový komentář v Pythonu začíná znakem '#'."
+      "explain": "Jednořádkový komentář začíná znakem #."
+    },
+    {
+      "q": "Který zápis správně vytvoří proměnnou s hodnotou 10?",
+      "a": "let x = 10",
+      "b": "var x = 10",
+      "c": "x := 10",
+      "d": "x = 10",
+      "correct": "d",
+      "explain": "Přiřazení v Pythonu se dělá pomocí =, tedy x = 10."
+    },
+    {
+      "q": "Co vypíše kód: print(2 + 3 * 2)?",
+      "a": "10",
+      "b": "12",
+      "c": "8",
+      "d": "7",
+      "correct": "c",
+      "explain": "Násobení má přednost: 3*2 = 6, pak 2+6 = 8."
+    },
+    {
+      "q": "Co vrátí input() za typ?",
+      "a": "int",
+      "b": "float",
+      "c": "str",
+      "d": "bool",
+      "correct": "c",
+      "explain": "Funkce input() vrací vždy řetězec (str)."
+    },
+    {
+      "q": "Jak správně přečíst celé číslo od uživatele do proměnné age?",
+      "a": "age = input(int)",
+      "b": "age = int(input())",
+      "c": "int = input(age)",
+      "d": "age = input(); int(age) # bez uložení",
+      "correct": "b",
+      "explain": "Nejprve získáme řetězec z input() a hned ho převedeme na int: age = int(input())."
+    },
+    {
+      "q": "Oprava kódu: if x = 5:\\n    print('pět')",
+      "a": "if x == 5:\\n    print('pět')",
+      "b": "if x := 5:\\n    print('pět')",
+      "c": "if (x = 5) then:\\n    print('pět')",
+      "d": "if x equals 5:\\n    print('pět')",
+      "correct": "a",
+      "explain": "V podmínce se používá porovnání ==, ne přiřazení =."
+    },
+    {
+      "q": "Co vypíše kód: x = '3'; y = 2; print(x * y)?",
+      "a": "5",
+      "b": "6",
+      "c": "33",
+      "d": "333",
+      "correct": "c",
+      "explain": "'3' * 2 zopakuje řetězec dvakrát → '33'."
+    },
+    {
+      "q": "Doplň: ______('Ahoj', 'světe') vypíše \"Ahoj světe\" na jeden řádek.",
+      "a": "echo",
+      "b": "print",
+      "c": "printf",
+      "d": "show",
+      "correct": "b",
+      "explain": "V Pythonu používáme funkci print()."
+    },
+    {
+      "q": "Jaký výstup bude mít kód?\\nname = 'Ada'\\nprint('Ahoj, ' + name)",
+      "a": "Ahoj, name",
+      "b": "Ahoj, Ada",
+      "c": "name",
+      "d": "Ada",
+      "correct": "b",
+      "explain": "Řetězce se spojí: 'Ahoj, ' + 'Ada' → 'Ahoj, Ada'."
+    },
+    {
+      "q": "Který kód správně ošetří porovnání čísel z inputu?",
+      "a": "a = input(); b = input(); print(a > b)",
+      "b": "a = int(input()); b = int(input()); print(a > b)",
+      "c": "a = str(input()); b = str(input()); print(a > b)",
+      "d": "a = float; b = float; print(a > b)",
+      "correct": "b",
+      "explain": "Input vrací str, pro číselné porovnání je nutná konverze na int."
+    },
+    {
+      "q": "Najdi chybu v odsazení:\\nif x > 0:\\nprint('plus')",
+      "a": "Chybí dvojtečka",
+      "b": "Chybí závorky",
+      "c": "Chybí odsazení bloku print",
+      "d": "Chybí uvozovky",
+      "correct": "c",
+      "explain": "Tělo if musí být odsazené: if x > 0:\\n    print('plus')."
+    },
+    {
+      "q": "Co vypíše kód: print(bool(''))?",
+      "a": "True",
+      "b": "False",
+      "c": "1",
+      "d": "0",
+      "correct": "b",
+      "explain": "Prázdný řetězec je v Pythonu vyhodnocen jako False."
+    },
+    {
+      "q": "Doplň f-string, aby vypsal: \"Výsledek: 7\"\\nx = 7\\nprint( f\"__________\" )",
+      "a": "{Výsledek: x}",
+      "b": "Výsledek: {x}",
+      "c": "{x}: Výsledek",
+      "d": "Výsledek: x",
+      "correct": "b",
+      "explain": "F-string vkládá hodnoty v { } → f\"Výsledek: {x}\"."
+    },
+    {
+      "q": "Co je špatně a jak opravit?\\nname = input()\\nprint('Ahoj, ' + name + 5)",
+      "a": "Chybí čárky v print → print('Ahoj, ', name, 5)",
+      "b": "Je třeba převést 5 na str → print('Ahoj, ' + name + str(5))",
+      "c": "Input nelze použít s print",
+      "d": "Potřebuji fmt knihovnu",
+      "correct": "b",
+      "explain": "Nelze sčítat str a int. Převod čísla na str problém řeší."
+    },
+    {
+      "q": "Co vypíše kód?\\nx = 3\\ny = 4\\nif x + y > 6:\\n    print('větší')\\nelse:\\n    print('menší nebo rovno')",
+      "a": "větší",
+      "b": "menší nebo rovno",
+      "c": "3",
+      "d": "4",
+      "correct": "a",
+      "explain": "3+4=7 → 7 > 6, proto se vytiskne 'větší'."
+    },
+    {
+      "q": "Který zápis vytvoří a a b a prohodí jejich hodnoty (swap) nejjednodušeji?",
+      "a": "tmp = a; a = b; b = tmp",
+      "b": "swap(a,b)",
+      "c": "a, b = b, a",
+      "d": "a == b",
+      "correct": "c",
+      "explain": "Python umí paralelní přiřazení: a, b = b, a."
+    },
+    {
+      "q": "Jak změnit oddělovač v print tak, aby mezi hodnotami byla pomlčka?\\nprint('A', 'B', 'C', ____='-')",
+      "a": "end",
+      "b": "sep",
+      "c": "join",
+      "d": "dash",
+      "correct": "b",
+      "explain": "Argument sep nastavuje oddělovač mezi položkami v print."
+    },
+    {
+      "q": "Co vypíše kód?\\na = '10'\\nb = '2'\\nprint(a > b)",
+      "a": "True",
+      "b": "False",
+      "c": "Chyba typu",
+      "d": "10 > 2 (číselně)",
+      "correct": "b",
+      "explain": "Porovnávají se řetězce lexikograficky: '10' < '2', proto False."
+    },
+    {
+      "q": "Doplň podmínku, aby se vytisklo \"OK\" jen když číslo je sudé.\\nn = int(input())\\nif __________:\\n    print('OK')",
+      "a": "n / 2 == 0",
+      "b": "n % 2 == 0",
+      "c": "n // 2",
+      "d": "even(n)",
+      "correct": "b",
+      "explain": "Sudost testujeme zbytkem po dělení dvěma: n % 2 == 0."
+    },
+    {
+      "q": "Najdi chybu: Má vypsat \"pozitivní\", když n > 0.\\nif n > 0\\n    print('pozitivní')",
+      "a": "Chybí dvojtečka za podmínkou",
+      "b": "Chybí závorky",
+      "c": "Chybí uvozovky",
+      "d": "Chybí return",
+      "correct": "a",
+      "explain": "Za podmínkou musí být : → if n > 0:."
     }
   ]
 }

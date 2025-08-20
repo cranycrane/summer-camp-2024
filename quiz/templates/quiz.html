@@ -19,7 +19,7 @@
 
     <!-- Panel otázky -->
     <div id="qPanel" class="space-y-4">
-      <p id="qText" class="text-lg font-semibold"></p>
+      <p id="qText" class="text-lg font-semibold whitespace-pre-wrap"></p>
       <div id="answers" class="grid gap-3 md:grid-cols-2"></div>
     </div>
 
@@ -63,10 +63,17 @@
 
   const optionOrder = ['a','b','c','d'];
 
+  function normalizeNewlines(s) {
+    // převede doslovné \n na skutečné odřádkování
+    return String(s).replace(/\\n/g, '\n');
+  }
+
+
   function renderQuestion() {
     const q = questions[idx];
     counter.textContent = (idx+1) + ' / ' + total;
-    qText.textContent = (idx+1) + '. ' + q.q;
+    qText.textContent = (idx + 1) + '. ' + normalizeNewlines(q.q);
+
 
     // Tlačítka možností
     answersEl.innerHTML = '';
@@ -75,10 +82,20 @@
       btn.type = 'button';
       btn.dataset.value = opt;
       btn.className = baseBtnClass(opt === answersMap[idx]);
-      btn.innerHTML = `<span class="font-semibold uppercase mr-1">${opt})</span> ${escapeHtml(q[opt])}`;
+
+      // prefix "A)"/"B)" nech klidně jako HTML
+      btn.innerHTML = `<span class="font-semibold uppercase mr-1">${opt})</span>`;
+
+      // vlastní text varianty jako textContent (bez HTML), s pre-wrap
+      const label = document.createElement('span');
+      label.className = 'whitespace-pre-wrap';
+      label.textContent = normalizeNewlines(q[opt]);
+      btn.appendChild(label);
+
       btn.onclick = () => selectOption(opt);
       answersEl.appendChild(btn);
     });
+
 
     // Navigation
     prevBtn.disabled = (idx === 0);

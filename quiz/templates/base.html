@@ -26,6 +26,7 @@
         {% endif %}
         <span>{{ ui_user.username }}</span>
       </div>
+      <a href="{{ url_for('shop') }}" class="hover:underline">🛒 Obchod</a>
         <a href="{{ url_for('stats') }}" class="hover:underline">📊 Statistiky</a>
         <a href="{{ url_for('logout') }}" class="hover:underline">Odhlásit</a>
       {% else %}

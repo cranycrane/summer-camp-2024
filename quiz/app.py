@@ -468,34 +468,31 @@ def quiz_stats(quiz_id):
     db = get_db()
 
     user_scores = db.execute("""
-        WITH last AS (
-        SELECT user_id, MAX(created_at) AS max_created_at
-        FROM results
-        WHERE quiz_id=?
-        GROUP BY user_id
-        )
-        SELECT 
-            u.id             AS user_id,
-            u.username,
-            COALESCE(u.profile_image, '') AS profile_image,
-            COALESCE(up.total_points, 0)  AS total_points,
-            r.score,
-            r.created_at
-        FROM results r
-        JOIN last l 
-        ON l.user_id = r.user_id AND l.max_created_at = r.created_at
-        JOIN users u 
-        ON u.id = r.user_id
-        LEFT JOIN user_points up 
-        ON up.user_id = u.id
-        WHERE r.quiz_id=?
-        ORDER BY r.score DESC, r.created_at DESC
+            WITH last AS (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM results
+            WHERE quiz_id=?
+            GROUP BY user_id
+            )
+            SELECT u.id AS user_id,
+                u.username,
+                r.score,
+                r.created_at,
+                COALESCE(u.profile_image, '') AS profile_image
+            FROM results r
+            JOIN last l 
+            ON l.user_id = r.user_id AND l.max_created_at = r.created_at
+            JOIN users u 
+            ON u.id = r.user_id
+            WHERE r.quiz_id=?
+            ORDER BY r.score DESC, r.created_at DESC
+
 
     """, (quiz_id, quiz_id)).fetchall()
 
     users = []
     for row in user_scores:
-        tp = row["total_points"] or 0
+        tp = get_total_points(db, row["user_id"])  # 👈 načteme body přes helper
         level, next_level = get_level_for_points(tp)
 
         if next_level:
@@ -507,7 +504,7 @@ def quiz_stats(quiz_id):
             to_next = 0
 
         users.append({
-            "id": row["user_id"],   # 👈 opraveno
+            "id": row["user_id"],
             "username": row["username"],
             "profile_image": row["profile_image"],
             "total_points": tp,
@@ -518,6 +515,7 @@ def quiz_stats(quiz_id):
             "score": row["score"],
             "created_at": row["created_at"]
         })
+
 
 
     return render_template("quiz_stats.html", quiz=quiz, users=users)
