@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow max-w-3xl mx-auto">
+  <h2 class="text-2xl font-bold mb-2 text-center">Výsledek</h2>
+  <p class="mb-6 text-center">Tvůj výsledek: <strong>{{ score }}/{{ total }}</strong></p>
+
+{% if earned_points is defined %}
+  <div class="my-4 p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900">
+    <div><strong>+{{ earned_points }}</strong> bodů za tento kvíz</div>
+    <div class="mt-1">Celkem: <strong>{{ total_points }}</strong> bodů</div>
+
+    <div class="mt-3">
+      <div class="font-semibold">Úroveň: {{ level.icon }} {{ level.title }}</div>
+      {% if next_level %}
+        <div class="mt-1 text-sm text-slate-700">
+          Do další úrovně ({{ next_level.title }}) zbývá
+          <strong>{{ next_level.min_points - total_points }}</strong> bodů.
+        </div>
+        <div class="w-full h-2 bg-slate-200 rounded mt-2 overflow-hidden">
+          {% set prev_min = level.min_points %}
+          {% set next_min = next_level.min_points %}
+          {% set prog = ((total_points - prev_min) / (next_min - prev_min) * 100) | round(0, 'floor') %}
+          <div class="h-2 bg-indigo-600" style="width: {{ [0, [100, prog]|min ]|max }}%"></div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if leveled_up %}
+      <div class="mt-3 p-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-900">
+        🎉 Postup na novou úroveň: <strong>{{ level.title }}</strong>!
+      </div>
+      <script>document.addEventListener('DOMContentLoaded', ()=>{ if (window.confetti) confetti({particleCount:200, spread:100}); });</script>
+    {% endif %}
+
+    {% if unlocked_badges and unlocked_badges|length %}
+      <div class="mt-3">
+        <div class="font-semibold mb-1">Nové odznaky:</div>
+        <div class="flex flex-wrap gap-2">
+          {% for b in unlocked_badges %}
+            <div class="px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900">
+              <span class="mr-1">{{ b.icon }}</span><strong>{{ b.name }}</strong>
+              <span class="text-slate-600 text-sm">— {{ b.desc }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+
+
+  <!-- Řešení všech otázek -->
+  <div class="space-y-6">
+    {% for q in questions %}
+      {% set i = loop.index0 %}
+      {% set correct = q.correct %}
+      {% set user = answers.get(i|string) %}
+      <div class="p-4 rounded-xl border border-slate-200 bg-white">
+        <p class="font-semibold mb-3">{{ loop.index }}. {{ q.q }}</p>
+
+        <div class="grid gap-2 md:grid-cols-2">
+          {% for opt in ['a','b','c','d'] %}
+            {% set base = "px-4 py-3 rounded-lg border text-left" %}
+            {% set is_correct = (opt == correct) %}
+            {% set is_user = (opt == user) %}
+
+            {% if is_correct and is_user %}
+              {% set cls = base + " bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold" %}
+              {% set tag = "Správně vybráno ✓" %}
+            {% elif is_correct %}
+              {% set cls = base + " bg-emerald-50 border-emerald-300 text-emerald-900" %}
+              {% set tag = "Správná odpověď" %}
+            {% elif is_user %}
+              {% set cls = base + " bg-rose-50 border-rose-300 text-rose-900 font-semibold" %}
+              {% set tag = "Tvoje volba ✗" %}
+            {% else %}
+              {% set cls = base + " bg-slate-50 border-slate-200 text-slate-800" %}
+              {% set tag = "" %}
+            {% endif %}
+
+            <div class="{{ cls }}">
+              <div class="flex items-center justify-between">
+                <div><span class="uppercase font-semibold mr-1">{{ opt }})</span> {{ q[opt] }}</div>
+                {% if tag %}<span class="text-xs">{{ tag }}</span>{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if q.get('explain') %}
+          <div class="mt-3 text-sm p-3 rounded bg-amber-50 border border-amber-200 text-amber-900">
+            <strong>Vysvětlení:</strong> {{ q.explain }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Navigace úplně dole -->
+  <div class="mt-8 flex justify-center">
+    <a href="{{ url_for('index') }}"
+       class="px-4 py-2 bg-slate-100 rounded hover:bg-slate-200">↩︎ Zpět na kvízy</a>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Náhodně vyber animaci
+  const effects = [confettiBurst, emojiRain, fireworks];
+  const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+  randomEffect();
+});
+
+// 🎉 Konfety
+function confettiBurst() {
+  confetti({
+    particleCount: 200,
+    spread: 100,
+    origin: { y: 0.6 }
+  });
+}
+
+// 🌟 Ohňostroj
+function fireworks() {
+  const duration = 2 * 1000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 4,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
+    });
+    confetti({
+      particleCount: 4,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 }
+    });
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
+
+// 😂 Emoji rain
+function emojiRain() {
+  const emojis = ["🎉","⭐","🎈","🔥","🐱","🍕","🚀","⚡","🌈"];
+  const end = Date.now() + 2000;
+
+  (function frame() {
+    confetti({
+      particleCount: 2,
+      angle: 90,
+      spread: 60,
+      origin: { x: Math.random(), y: 0 },
+      shapes: ["text"],
+      scalar: 2,
+      // confetti lib umí text!
+      text: emojis[Math.floor(Math.random() * emojis.length)]
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow max-w-3xl mx-auto">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl font-bold">Řešení – {{ quiz_title }}</h2>
+    <div class="text-sm text-slate-600">{{ score }}/{{ total }}</div>
+  </div>
+
+  <div class="space-y-6">
+    {% for q in questions %}
+      {% set i = loop.index0 %}
+      {% set correct = q.correct %}
+      {% set user = answers.get(i|string) %}
+      <div class="p-4 rounded-xl border border-slate-200 bg-white">
+        <p class="font-semibold mb-3">{{ loop.index }}. {{ q.q }}</p>
+
+        <div class="grid gap-2 md:grid-cols-2">
+          {% for opt in ['a','b','c','d'] %}
+            {% set base = "px-4 py-3 rounded-lg border text-left" %}
+            {% set is_correct = (opt == correct) %}
+            {% set is_user = (opt == user) %}
+
+            {% if is_correct and is_user %}
+              {% set cls = base + " bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold" %}
+              {% set tag = "Správně vybráno ✓" %}
+            {% elif is_correct %}
+              {% set cls = base + " bg-emerald-50 border-emerald-300 text-emerald-900" %}
+              {% set tag = "Správná odpověď" %}
+            {% elif is_user %}
+              {% set cls = base + " bg-rose-50 border-rose-300 text-rose-900 font-semibold" %}
+              {% set tag = "Tvoje volba ✗" %}
+            {% else %}
+              {% set cls = base + " bg-slate-50 border-slate-200 text-slate-800" %}
+              {% set tag = "" %}
+            {% endif %}
+
+            <div class="{{ cls }}">
+              <div class="flex items-center justify-between">
+                <div><span class="uppercase font-semibold mr-1">{{ opt }})</span> {{ q[opt] }}</div>
+                {% if tag %}<span class="text-xs">{{ tag }}</span>{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if q.get('explain') %}
+          <div class="mt-3 text-sm p-3 rounded bg-amber-50 border border-amber-200 text-amber-900">
+            <strong>Vysvětlení:</strong> {{ q.explain }}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-6 flex justify-center">
+    <a class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700" href="{{ url_for('index') }}">Zpět na kvízy</a>
+  </div>
+</div>
+{% endblock %}

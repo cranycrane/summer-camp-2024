@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>{{ title or "Kvízová aplikace" }}</title>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-emerald-50 min-h-screen"
+  style="
+    {% if ui_user and ui_user.background_theme %}
+      background-image: url('{{ url_for('static', filename='themes/' ~ ui_user.background_theme) }}');
+      background-size: cover;
+    {% endif %}
+  ">
+
+  <nav class="bg-indigo-600 text-white p-4 flex justify-between items-center shadow-lg rounded-b-xl text-lg">
+    <a href="{{ url_for('index') }}" class="font-bold pl-8">🏫 Kvízy</a>
+    <div class="flex gap-8 items-center pr-8">
+      {% if ui_user %}
+      <div class="flex flex-row items-center gap-2">
+        {% if ui_user.profile_image %}
+          <img src="{{ url_for('static', filename='avatars/' ~ ui_user.profile_image) }}"
+               alt="avatar" class="w-10 h-10 rounded-full object-cover border border-white/30">
+        {% else %}
+          <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">🙂</div>
+        {% endif %}
+        <span>{{ ui_user.username }}</span>
+      </div>
+        <a href="{{ url_for('stats') }}" class="hover:underline">📊 Statistiky</a>
+        <a href="{{ url_for('logout') }}" class="hover:underline">Odhlásit</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="hover:underline">Přihlásit</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto p-12 bg-white rounded-xl shadow-2xl mt-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "code": "bg_space", "name": "Vesmírné pozadí", "cost": 30, "type": "background", "value": "space.webp" },
+    { "code": "bg_forest", "name": "Lesní pozadí", "cost": 150, "type": "background", "value": "forest.jpg" },
+    { "code": "pf_cat", "name": "Kočičí avatar", "cost": 20, "type": "profile_image", "value": "cat.png" }
+  ]
+}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- PANEL HRÁČE -->
+<div class="bg-white rounded-xl shadow p-4 mb-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-lg font-semibold">👤 {{ username }}</h2>
+      <p class="text-sm text-slate-600">Celkem bodů: {{ total_points }}</p>
+      {% if to_next > 0 %}
+        <p class="text-xs text-amber-600">Do další úrovně zbývá {{ to_next }} bodů</p>
+      {% else %}
+        <p class="text-xs text-emerald-600">Dosáhl/a jsi nejvyšší úrovně 🎉</p>
+      {% endif %}
+    </div>
+    <div class="flex flex-col items-end">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">{{ level.icon }}</span>
+        <span class="font-medium">{{ level.title }}</span>
+      </div>
+      <div class="w-32 h-2 bg-slate-200 rounded overflow-hidden mt-1"
+           title="{% if to_next > 0 %}Do další úrovně zbývá {{ to_next }} bodů{% else %}Nejvyšší úroveň dosažena{% endif %}">
+        <div class="h-2 bg-indigo-600" style="width: {{ progress_pct }}%"></div>
+      </div>
+    </div>
+  </div>
+
+  {% if badges %}
+  <div class="mt-4">
+    <h3 class="text-sm font-semibold text-slate-700 mb-1">Odznaky:</h3>
+    <div class="flex flex-wrap gap-2">
+      {% for b in badges %}
+        <div class="relative group">
+          <div class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-2xl cursor-pointer group-hover:scale-105 transition">
+            {{ b.icon }}
+          </div>
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block
+                      bg-slate-800 text-white text-xs rounded px-2 py-1 shadow whitespace-nowrap">
+            {{ b.name }} – {{ b.desc }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+    <p class="mt-2 text-xs text-slate-500">Zatím žádné odznaky.</p>
+  {% endif %}
+</div>
+
+
+<!-- KVÍZY -->
+<h1 class="text-2xl font-bold mb-4">Dostupné kvízy</h1>
+<ul class="space-y-3">
+  {% for q in quizzes %}
+  <li class="p-4 bg-white rounded-lg shadow flex justify-between items-center">
+    <div>
+      <h3 class="font-semibold">{{ q.title }}</h3>
+      <p class="text-sm text-slate-600">{{ q.description }}</p>
+      <p class="text-xs text-slate-500">Vyplněno {{ q.count }}×</p>
+      {% if q.remaining %}
+        <p class="text-xs text-amber-600">Můžeš znovu za {{ q.remaining.seconds//3600 }}h {{ (q.remaining.seconds//60)%60 }}m</p>
+      {% endif %}
+    </div>
+    <div class="flex gap-2">
+      {% if q.can_start %}
+        <a href="{{ url_for('quiz', quiz_id=q.id) }}" class="px-3 py-2 bg-indigo-600 text-white rounded">Vyplnit test</a>
+      {% endif %}
+      {% if q.last_result_id %}
+        <a href="{{ url_for('review', result_id=q.last_result_id) }}" class="px-3 py-2 bg-emerald-600 text-white rounded">Výsledek</a>
+      {% endif %}
+      <a href="{{ url_for('quiz_stats', quiz_id=q.id) }}" class="px-3 py-2 bg-slate-600 text-white rounded">Statistika</a>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

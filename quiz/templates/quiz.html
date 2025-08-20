@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow max-w-3xl mx-auto">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl font-bold">{{ quiz['title'] }}</h2>
+    <div class="text-sm text-slate-600" id="counter">1 / {{ data['questions']|length }}</div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="w-full h-3 bg-slate-200 rounded mb-6 overflow-hidden">
+    <div id="progress" class="h-3 bg-indigo-600 transition-all" style="width:0%"></div>
+  </div>
+
+  <!-- Form: hidden inputs pro POST -->
+  <form id="quizForm" method="post">
+    {% for q in data['questions'] %}
+      <input type="hidden" name="q{{ loop.index0 }}" id="hidden_q{{ loop.index0 }}">
+    {% endfor %}
+
+    <!-- Panel otázky -->
+    <div id="qPanel" class="space-y-4">
+      <p id="qText" class="text-lg font-semibold"></p>
+      <div id="answers" class="grid gap-3 md:grid-cols-2"></div>
+    </div>
+
+    <!-- Navigace -->
+    <div class="mt-6 flex items-center justify-between">
+      <button type="button" id="prevBtn"
+              class="px-4 py-2 rounded-lg bg-slate-100 text-slate-800 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled>← Zpět</button>
+
+      <div class="flex items-center gap-3 text-sm text-slate-600">
+        <span id="doneCount">0</span> dokončeno
+      </div>
+
+      <button type="button" id="nextBtn" onclick="playRandomAnimation()"
+              class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        Další →
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+(() => {
+  // Data otázek z backendu
+  const questions = {{ data['questions']|tojson }};
+  const total = questions.length;
+
+  // Stav
+  let idx = 0;                          // aktuální otázka
+  const answersMap = {};                // index -> 'a'/'b'/'c'/'d'
+
+  // Elementy
+  const qText = document.getElementById('qText');
+  const answersEl = document.getElementById('answers');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const doneCountEl = document.getElementById('doneCount');
+  const form = document.getElementById('quizForm');
+
+  const optionOrder = ['a','b','c','d'];
+
+  function renderQuestion() {
+    const q = questions[idx];
+    counter.textContent = (idx+1) + ' / ' + total;
+    qText.textContent = (idx+1) + '. ' + q.q;
+
+    // Tlačítka možností
+    answersEl.innerHTML = '';
+    optionOrder.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.value = opt;
+      btn.className = baseBtnClass(opt === answersMap[idx]);
+      btn.innerHTML = `<span class="font-semibold uppercase mr-1">${opt})</span> ${escapeHtml(q[opt])}`;
+      btn.onclick = () => selectOption(opt);
+      answersEl.appendChild(btn);
+    });
+
+    // Navigation
+    prevBtn.disabled = (idx === 0);
+    updateNextBtnState();
+    updateProgress();
+  }
+
+  function baseBtnClass(active) {
+    return active
+      ? 'px-4 py-3 rounded-xl bg-emerald-600 text-white shadow hover:bg-emerald-700 text-left'
+      : 'px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left';
+  }
+
+  function selectOption(opt) {
+    answersMap[idx] = opt;
+    // vizuální aktivace
+    Array.from(answersEl.children).forEach(btn => {
+      btn.className = baseBtnClass(btn.dataset.value === opt);
+    });
+    // ulož do hidden inputu pro POST
+    const hidden = document.getElementById('hidden_q'+idx);
+    if (hidden) hidden.value = opt;
+    updateNextBtnState();
+    updateDoneCount();
+  }
+
+  function updateNextBtnState() {
+    const hasAnswer = !!answersMap[idx];
+    if (idx === total-1) {
+      nextBtn.textContent = 'Odeslat ✓';
+      nextBtn.disabled = !hasAnswer;
+    } else {
+      nextBtn.textContent = 'Další →';
+      nextBtn.disabled = !hasAnswer;
+    }
+  }
+
+  function updateProgress() {
+    // % hotovo = odpovězené / total
+    const answered = Object.keys(answersMap).filter(k => answersMap[k]).length;
+    const pct = Math.round(100 * answered / total);
+    progress.style.width = pct + '%';
+  }
+
+  function updateDoneCount() {
+    const answered = Object.keys(answersMap).filter(k => answersMap[k]).length;
+    doneCountEl.textContent = answered;
+    updateProgress();
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (idx > 0) { idx--; renderQuestion(); }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (idx < total-1) {
+      idx++;
+      renderQuestion();
+    } else {
+      // poslední otázka -> submit
+      // Před odesláním ještě zajisti, že všechny hidden inputs jsou vyplněné (kvůli required to neřešíme)
+      form.submit();
+    }
+  });
+
+  // Klávesové zkratky: A/B/C/D, šipky vlevo/vpravo
+  window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    if (['a','b','c','d'].includes(key)) {
+      selectOption(key);
+    } else if (e.key === 'ArrowRight') {
+      nextBtn.click();
+    } else if (e.key === 'ArrowLeft') {
+      prevBtn.click();
+    }
+  });
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
+  }
+
+  // Inicializace
+  renderQuestion();
+  updateDoneCount();
+})();
+</script>
+<script>
+function playRandomAnimation() {
+  // 🎲 náhodný výběr efektu
+  const effects = ["confetti", "sparkles", "emoji"];
+  const choice = effects[Math.floor(Math.random() * effects.length)];
+
+  if (choice === "confetti") {
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  } else if (choice === "sparkles") {
+    party.sparkles(document.body, { count: party.variation.range(40, 80) });
+  } else if (choice === "emoji") {
+    party.confetti(document.body, {
+      count: party.variation.range(20, 40),
+      shapes: ["🌟", "🔥", "🎉", "🦄", "🍭"]
+    });
+  }
+}
+</script>
+
+{% endblock %}

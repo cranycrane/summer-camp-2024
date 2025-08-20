@@ -1,0 +1,24 @@
+{
+  "title": "Ukázkový kvíz",
+  "description": "První testík",
+  "questions": [
+    {
+      "q": "Který z těchto datových typů je v Pythonu?",
+      "a": "car",
+      "b": "document",
+      "c": "integer",
+      "d": "house",
+      "correct": "c",
+      "explain": "V Pythonu je základní číselný typ 'int' (integer)."
+    },
+    {
+      "q": "Jak se zapisuje komentář v Pythonu?",
+      "a": "//",
+      "b": "#",
+      "c": "/* */",
+      "d": "--",
+      "correct": "b",
+      "explain": "Jednořádkový komentář v Pythonu začíná znakem '#'."
+    }
+  ]
+}

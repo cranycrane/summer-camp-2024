@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>WebSocket Chat</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 24px auto; }
+    #log { border:1px solid #ddd; border-radius:8px; padding:12px; height:320px; overflow-y:auto; background:#fafafa; }
+    .sys { color:#666; font-style: italic; }
+    .msg { margin: 4px 0; }
+    .time { color:#999; margin-right:6px; }
+    .nick { font-weight:600; margin-right:6px; }
+    form { display:flex; gap:8px; margin-top:12px; }
+    input[type="text"] { flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; }
+    button { padding:10px 14px; border:0; border-radius:8px; background:#2563eb; color:white; cursor:pointer; }
+    button:hover { background:#1d4ed8; }
+    .top { display:flex; gap:8px; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <h1>Chat – WebSocket klient</h1>
+
+  <div class="top">
+    <input id="nick" type="text" placeholder="Tvoje přezdívka" />
+    <button id="connect">Připojit</button>
+    <span id="status">Nepřipojeno</span>
+  </div>
+
+  <div id="log"></div>
+
+  <form id="form" autocomplete="off">
+    <input id="input" type="text" placeholder="Napiš zprávu…" disabled />
+    <button id="send" disabled>Odeslat</button>
+  </form>
+
+  <script>
+    let ws = null;
+
+    const el = (id) => document.getElementById(id);
+    const log = el("log");
+    const nickInput = el("nick");
+    const statusEl = el("status");
+    const form = el("form");
+    const input = el("input");
+    const connectBtn = el("connect");
+    const sendBtn = el("send");
+
+    function addLine(html, cls="") {
+      const div = document.createElement("div");
+      div.className = cls ? `msg ${cls}` : "msg";
+      div.innerHTML = html;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function setConnectedState(connected) {
+      input.disabled = !connected;
+      sendBtn.disabled = !connected;
+      statusEl.textContent = connected ? "Připojeno" : "Nepřipojeno";
+    }
+
+    connectBtn.addEventListener("click", () => {
+      const nick = (nickInput.value || "").trim() || "Anon";
+      // připoj se na Python server
+      ws = new WebSocket("ws://localhost:8080");
+
+      ws.addEventListener("open", () => {
+        setConnectedState(true);
+        addLine(`<span class="sys">[system] Připojeno k serveru.</span>`, "sys");
+        // pošli hello s přezdívkou
+        ws.send(JSON.stringify({ type: "hello", nick }));
+      });
+
+      ws.addEventListener("message", (ev) => {
+        try {
+          const data = JSON.parse(ev.data);
+          if (data.type === "system") {
+            addLine(`<span class="sys">[system] ${data.text}</span>`, "sys");
+          } else if (data.type === "chat") {
+            const t = data.time ? `<span class="time">[${data.time}]</span>` : "";
+            addLine(`${t}<span class="nick">${escapeHtml(data.nick)}:</span> ${escapeHtml(data.text)}`);
+          } else if (data.type === "error") {
+            addLine(`<span class="sys">[chyba] ${data.text}</span>`, "sys");
+          } else {
+            // zpětná kompatibilita, kdyby server poslal plain text
+            addLine(escapeHtml(ev.data));
+          }
+        } catch {
+          // kdyby přišel čistý text místo JSONu
+          addLine(escapeHtml(ev.data));
+        }
+      });
+
+      ws.addEventListener("close", () => {
+        setConnectedState(false);
+        addLine(`<span class="sys">[system] Odpojeno.</span>`, "sys");
+      });
+
+      ws.addEventListener("error", () => {
+        setConnectedState(false);
+        addLine(`<span class="sys">[system] Chyba spojení.</span>`, "sys");
+      });
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const text = (input.value || "").trim();
+      if (!text) return;
+      ws.send(JSON.stringify({ type: "chat", text }));
+      input.value = "";
+      input.focus();
+    });
+
+    // jednoduché „escapování“ kvůli bezpečnosti
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[c]));
+    }
+  </script>
+</body>
+</html>

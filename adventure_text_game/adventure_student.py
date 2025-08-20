@@ -21,7 +21,7 @@ def získej_jméno_charaktera() -> str:
     """
 
     ########### Oprav tento kód ############
-    jméno_charaktera = input("Zadej jméno: ")
+    jméno_charaktera = print("Zadej jméno: ")
     ########################################
 
 
@@ -42,9 +42,9 @@ def získej_jméno_charaktera() -> str:
     1.Vytvoř proměnné pro charakter: 
     - životy s hodnotou 100
     - peníze s hodnotou 0
-    - inventář jako prázdní pole
+    - inventář jako prázdné pole
 
-    2. V části 'return' u položky 'jméno' zavolej funkci 'získej jméno_charaktera'
+    2. V části 'return' u položky 'jméno' zavolej funkci 'získej_jméno_charaktera'
     3. V části 'return' doplň proměnné 'životy', 'peníze' a 'inventář', které sis vytvořil
 """
 def vytvoř_charakter():

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-xl shadow max-w-3xl mx-auto">
+  <h2 class="text-2xl font-bold mb-4">Statistika – {{ quiz.title }}</h2>
+
+  {% if user_scores %}
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-slate-100">
+          <th class="p-2 border text-left">Uživatel</th>
+          <th class="p-2 border">Úroveň</th>
+          <th class="p-2 border">Body</th>
+          <th class="p-2 border">Skóre</th>
+          <th class="p-2 border">Naposledy</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <!-- Avatar + jméno -->
+          <td class="p-2 border flex items-center gap-2">
+            {% if u.profile_image %}
+              <img src="{{ url_for('static', filename='avatars/' ~ u.profile_image) }}"
+                  alt="avatar" class="w-8 h-8 rounded-full border">
+            {% else %}
+              <div class="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center">👤</div>
+            {% endif %}
+            {{ u.username }}
+          </td>
+
+          <!-- Úroveň -->
+          <td class="p-2 border">
+            <div class="flex flex-col items-center gap-1">
+              <div class="text-base">
+                <span class="mr-1">{{ u.level.icon }}</span>
+                <span class="font-medium">{{ u.level.title }}</span>
+              </div>
+              <div class="w-20 h-2 bg-slate-200 rounded overflow-hidden"
+                  title="{% if u.next_level %}Do další úrovně ({{ u.next_level.title }}) zbývá {{ u.to_next }} bodů.{% else %}Nejvyšší úroveň dosažena.{% endif %}">
+                <div class="h-2 bg-indigo-600" style="width: {{ u.progress_pct }}%"></div>
+              </div>
+            </div>
+          </td>
+
+          <!-- Body -->
+          <td class="p-2 border text-center">{{ u.total_points }}</td>
+
+          <!-- Skóre z tohoto kvízu -->
+          <td class="p-2 border text-center">{{ u.score }}</td>
+
+          <!-- Datum -->
+          <td class="p-2 border text-sm text-slate-600">{{ u.created_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  {% else %}
+    <p class="text-slate-600">Zatím nikdo tento kvíz nevyplnil.</p>
+  {% endif %}
+
+  <div class="mt-6 text-center">
+    <a href="{{ url_for('index') }}" class="px-4 py-2 bg-slate-100 rounded hover:bg-slate-200">↩︎ Zpět na kvízy</a>
+  </div>
+</div>
+{% endblock %}

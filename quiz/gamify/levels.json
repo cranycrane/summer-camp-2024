@@ -1,0 +1,8 @@
+{
+  "levels": [
+    { "code": "L1", "min_points": 0,    "title": "Nováček",    "icon": "🌱" },
+    { "code": "L2", "min_points": 100,  "title": "Průzkumník", "icon": "🧭" },
+    { "code": "L3", "min_points": 250,  "title": "Expert",     "icon": "🧠" },
+    { "code": "L4", "min_points": 500,  "title": "Mistr",      "icon": "🏆" }
+  ]
+}
