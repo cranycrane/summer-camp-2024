@@ -14,6 +14,9 @@
   let flashTimer = 0;            // pro blikání barev od 700 bodů
 
 
+  const playerImg = new Image();
+  playerImg.src = "/static/player.png";  // ← GIF!
+
   // Hráč
   const player = {
     x: 60, y: H-60, w: 36, h: 36,
@@ -213,7 +216,11 @@
     rect(0, H-24, W, 4, '#94a3b8');
 
     // Hráč
-    rect(player.x, player.y, player.w, player.h, '#111827');
+    if (playerImg.complete) {
+        ctx.drawImage(playerImg, player.x, player.y, player.w, player.h);
+    } else {
+        rect(player.x, player.y, player.w, player.h, '#111827');
+    }
 
     // Překážky – s měnící se barvou
     ctx.fillStyle = obstacleColor;           // ← NEW

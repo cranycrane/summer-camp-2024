@@ -81,7 +81,6 @@ BASE = r"""
   <header class="p-6">
     <div class="max-w-4xl mx-auto">
       <h1 class="text-3xl font-black tracking-tight text-indigo-900">{{ title }}</h1>
-      <p class="text-sm text-slate-600 mt-1">Edukativní ukázka.</p>
     </div>
   </header>
   <main class="max-w-4xl mx-auto p-6">
@@ -103,15 +102,23 @@ DB: list[dict] = []
 
 # --- nastavení ---
 ADMIN_KEY = "teacher"  # změň si pro lekci
-APP_TITLE = "Super hra pro hackery" 
-
+APP_TITLE = "Kočičí útěk!" 
 
 INDEX = r"""
 {% extends 'base.html' %}
 {% block content %}
   <div>
     <div class="bg-white/80 backdrop-blur shadow rounded-2xl p-6 border border-slate-100">
+
+      <!-- 🔔 DISCLAIMER -->
+      <div class="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+        <strong>Upozornění:</strong> Toto je <u>edukativní aplikace</u> ukazující rizika při zadávání hesel. 
+        <br>
+        <strong>Nikdy zde nezadávejte své skutečné heslo!</strong>
+      </div>
+
       <h2 class="text-xl font-bold mb-4">Registrace do hry</h2>
+
       <form id="regForm" method="post" action="{{ url_for('register') }}" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-slate-700">Uživatelské jméno</label>
@@ -119,6 +126,7 @@ INDEX = r"""
             class="border-2 p-2 mt-1 w-full rounded-xl border-slate-300 focus:ring-2 focus:ring-indigo-500"
             placeholder="např. superhrdina" />
         </div>
+
         <div>
           <label class="block text-sm font-medium text-slate-700">Heslo</label>
           <input id="pwd" name="pwd" type="password" required
@@ -129,6 +137,7 @@ INDEX = r"""
           </div>
           <div id="meterLabel" class="text-xs text-slate-600 mt-1"> </div>
         </div>
+
         <div>
           <label class="block text-sm font-medium text-slate-700">Potvrzení hesla</label>
           <input id="pwd2" type="password" required
@@ -136,6 +145,7 @@ INDEX = r"""
             placeholder="zadejte heslo znovu" />
           <div id="pwdMismatch" class="text-xs text-red-600 mt-1 hidden">Hesla se neshodují</div>
         </div>
+
         <button class="w-full py-2 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow">
           Registrovat
         </button>
@@ -199,10 +209,21 @@ ADMIN = r"""
         </thead>
         <tbody>
           {% for r in rows %}
+          {% set pw = r.password_plain %}
+          {% if pw|length >= 3 %}
+            {% set masked = pw[0] ~ ('*' * (pw|length - 2)) ~ pw[-1] %}
+          {% else %}
+            {% set masked = '*' * (pw|length) %}
+          {% endif %}
           <tr class="border-t">
             <td class="py-2 font-medium">{{ r.user }}</td>
             <td class="py-2 text-rose-700">
-              <span class="plaintext">{{ r.password_plain }}</span>
+              <span class="plaintext"
+                    data-full="{{ pw }}"
+                    data-masked="{{ masked }}">
+                {{ masked }}
+              </span>
+              <button class="ml-2 text-xs text-blue-600 hover:underline toggle-btn">👁 Zobrazit</button>
             </td>
             <td class="py-2 text-slate-500 text-xs break-all">{{ r.password_hash }}</td>
             <td class="py-2 text-slate-600">{{ r.ip }}</td>
@@ -226,8 +247,26 @@ ADMIN = r"""
       </ul>
     </div>
   </div>
+
+  <script>
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const span = btn.previousElementSibling;
+        const isMasked = span.textContent.includes('*');
+
+        if (isMasked) {
+          span.textContent = span.dataset.full;
+          btn.textContent = "👁‍🗨 Skrýt";
+        } else {
+          span.textContent = span.dataset.masked;
+          btn.textContent = "👁 Zobrazit";
+        }
+      });
+    });
+  </script>
 {% endblock %}
 """
+
 
 THANKS = r"""
 {% extends 'base.html' %}
@@ -235,8 +274,7 @@ THANKS = r"""
   <div class="mx-auto max-w-lg bg-white/90 backdrop-blur shadow rounded-2xl p-6 border border-slate-100 text-center">
     <div class="text-4xl">🎉</div>
     <h2 class="text-xl font-bold mt-2">Díky za registraci, {{ user }}!</h2>
-    <p class="text-slate-600 mt-2">Teď si představ, že by tenhle web byl podvodný. Admin by viděl tvoje heslo v plaintextu.
-    Proto se na neznámých stránkách nikdy <strong>nepřihlašuj skutečným heslem</strong>.</p>
+    <p class="text-slate-600 mt-2">Tak co, jdeme na to?</p>
     <div class="mt-4 flex gap-2 justify-center">
       <a class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
    href="{{ url_for('game', user=user) }}">▶︎ Hrát hru</a>
@@ -251,7 +289,7 @@ GAME = r"""
 <div class="grid md:grid-cols-[1fr] gap-4">
   <div class="bg-white/90 backdrop-blur shadow rounded-2xl p-6 border border-slate-100">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-bold">Dino běžec – {{ user or 'Host' }}</h2>
+      <h2 class="text-xl font-bold">Kočičí útěk – hráč {{ user or 'Host' }}</h2>
       <div class="text-slate-600 text-sm">
         Ovládání: <kbd class="px-1 py-0.5 border rounded">SPACE</kbd> / <kbd class="px-1 py-0.5 border rounded">↑</kbd> skok,
         <kbd class="px-1 py-0.5 border rounded">R</kbd> restart
